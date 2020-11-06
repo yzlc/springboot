@@ -13,10 +13,6 @@ public class JsonUtil {
     }
 
     public static <T> T json2pojo(String jsonStr, Class<T> clazz) throws Exception {
-
-        //驼峰转换
-        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-
         //忽略JSON字符串中存在而Java对象实际没有的属性
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(jsonStr, clazz);
@@ -24,10 +20,6 @@ public class JsonUtil {
 
     public static <T> T json2pojo(String jsonStr, TypeReference<T> typeReference)
             throws Exception {
-
-        //驼峰转换
-        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
 
         //忽略JSON字符串中存在而Java对象实际没有的属性
