@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.yzlc.common.model.Excel;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -19,7 +18,6 @@ import java.util.Set;
 /**
  * @author yzlc
  */
-
 public class ExcelUtil {
     private static final Logger LOG = LoggerFactory.getLogger(ExcelUtil.class);
     private static final DataFormatter formatter = new DataFormatter();
@@ -30,7 +28,7 @@ public class ExcelUtil {
         return "attachment; filename=" + new String(fileName.getBytes("GB2312"), StandardCharsets.ISO_8859_1);
     }
 
-/**
+    /**
      * 导入excel，返回对象集合
      *
      * @param workbook Excel - xlsx
@@ -39,7 +37,6 @@ public class ExcelUtil {
      * @param <T>      返回对象
      * @return 集合
      */
-
     public static <T> Set<T> imports(XSSFWorkbook workbook, List<String> fields, Class<T> cls) {
         Set<T> set = new HashSet<>();
         try {
@@ -49,8 +46,8 @@ public class ExcelUtil {
                     T t = cls.newInstance();
                     for (int i = 0; i < fields.size(); i++) {
                         String cellValue = formatter.formatCellValue(row.getCell(i));
-                        if (RegexUtils.containsHtml(cellValue))
-                            throw new IllegalArgumentException(cellValue);
+                        /*if (RegexUtils.containsHtml(cellValue))
+                            throw new IllegalArgumentException(cellValue);*/
                         BeanUtils.setProperty(t, fields.get(i), cellValue);
                     }
                     set.add(t);
@@ -62,38 +59,7 @@ public class ExcelUtil {
         return set;
     }
 
-/**
-     * 导入excel(指定列)，返回对象集合
-     *
-     * @param sheet  Excel
-     * @param excels 列index - 字段名
-     * @param row    开始行index
-     * @param cls    返回类型
-     * @param <T>    返回对象
-     * @return 集合
-     */
-
-    public static <T> Set<T> imports(Sheet sheet, List<Excel> excels, int row, Class<T> cls) {
-        Set<T> set = new HashSet<>();
-        try {
-            for (int i = row; i <= sheet.getLastRowNum(); i++) {
-                T t = cls.newInstance();
-                Row sheetRow = sheet.getRow(i);
-                for (Excel excel : excels) {
-                    String cellValue = formatter.formatCellValue(sheetRow.getCell(excel.getCell())).trim();
-                    if (RegexUtils.containsHtml(cellValue))
-                        throw new IllegalArgumentException(cellValue);
-                    BeanUtils.setProperty(t, excel.getValue(), cellValue);
-                }
-                set.add(t);
-            }
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            LOG.error("", e);
-        }
-        return set;
-    }
-
-/**
+    /**
      * 创建sheet<br>
      * 标题加粗，标题列设置为“文本”格式
      *
@@ -101,14 +67,13 @@ public class ExcelUtil {
      * @param sheetName sheetName
      * @param titles    标题
      */
-
     public static <T> XSSFSheet createSheet(XSSFWorkbook workbook, String sheetName, List<String> titles, List<T> list, List<String> fields) {
         XSSFSheet sheet = createSheet(workbook, sheetName, titles);
         fillSheet(sheet, list, fields);
         return sheet;
     }
 
-/**
+    /**
      * 创建sheet<br>
      * 标题加粗，标题列设置为“文本”格式
      *
@@ -116,21 +81,19 @@ public class ExcelUtil {
      * @param sheetName sheetName
      * @param titles    标题
      */
-
     public static XSSFSheet createSheet(XSSFWorkbook workbook, String sheetName, List<String> titles) {
         XSSFSheet sheet = workbook.createSheet(sheetName);
         setTitle(workbook, sheet, titles);
         return sheet;
     }
 
-/**
+    /**
      * 填充sheet
      *
      * @param sheet  sheet
      * @param list   数据
      * @param fields 标题对应字段顺序
      */
-
     public static <T> void fillSheet(int rowIndex, int columnIndex, XSSFSheet sheet, List<T> list, List<String> fields) {
         try {
             for (int i = 0; i < list.size(); i++) {
@@ -145,38 +108,35 @@ public class ExcelUtil {
         }
     }
 
-/**
+    /**
      * 填充sheet
      *
      * @param sheet  sheet
      * @param list   数据
      * @param fields 标题对应字段顺序
      */
-
     public static <T> void fillSheet(int rowIndex, XSSFSheet sheet, List<T> list, List<String> fields) {
         fillSheet(rowIndex, 0, sheet, list, fields);
     }
 
-/**
+    /**
      * 填充sheet
      *
      * @param sheet  sheet
      * @param list   数据
      * @param fields 标题对应字段顺序
      */
-
     public static <T> void fillSheet(XSSFSheet sheet, List<T> list, List<String> fields) {
         fillSheet(sheet.getLastRowNum() + 1, 0, sheet, list, fields);
     }
 
-/**
+    /**
      * 导出空白excel
      *
      * @param resp     resp
      * @param fileName 文件名
      * @throws IOException IOException
      */
-
     public static void exportBlank(HttpServletResponse resp, String fileName) throws IOException {
         resp.reset();
         resp.setHeader(HEADER_NAME, encoding(fileName));
@@ -187,7 +147,7 @@ public class ExcelUtil {
         }
     }
 
-/**
+    /**
      * 导出excel<br>
      * 标题加粗，标题列设置为“文本”格式
      *
@@ -195,7 +155,6 @@ public class ExcelUtil {
      * @param fileName 文件名
      * @throws IOException IOException
      */
-
     public static void export(HttpServletResponse resp, String fileName, XSSFWorkbook workbook) throws IOException {
         resp.reset();
         resp.setHeader(HEADER_NAME, encoding(fileName));
@@ -205,21 +164,20 @@ public class ExcelUtil {
         }
     }
 
-/**
+    /**
      * 导出excel<br>
      * 标题加粗，标题列设置为“文本”格式
      *
      * @param fileName 文件名
      * @throws IOException IOException
      */
-
     public static void export(String fileName, XSSFWorkbook workbook) throws IOException {
         try (OutputStream os = new FileOutputStream(fileName)) {
             workbook.write(os);
         }
     }
 
-/**
+    /**
      * 导出excel<br>
      * 标题加粗，标题列设置为“文本”格式
      *
@@ -228,7 +186,6 @@ public class ExcelUtil {
      * @param titles   表头
      * @throws IOException IOException
      */
-
     public static void export(HttpServletResponse resp, String fileName, List<String> titles) throws IOException {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet();
@@ -238,7 +195,7 @@ public class ExcelUtil {
         export(resp, fileName, workbook);
     }
 
-/***
+    /***
      * 设置标题<br>
      * 1.默认把标题列设置为“文本”格式<br>
      * 2.默认加粗标题
@@ -246,7 +203,6 @@ public class ExcelUtil {
      * @param sheet sheet
      * @param titles 标题
      */
-
     private static void setTitle(XSSFWorkbook workbook, XSSFSheet sheet, List<String> titles) {
         CellStyle defaultStyle = workbook.createCellStyle();
         defaultStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
@@ -265,13 +221,12 @@ public class ExcelUtil {
         }
     }
 
-/**
+    /**
      * workbook转InputStream
      *
      * @param wb Workbook
      * @return InputStream
      */
-
     public static InputStream workbook2Stream(Workbook wb) throws IOException {
         InputStream in = null;
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();) {
@@ -285,5 +240,47 @@ public class ExcelUtil {
             IOUtils.closeQuietly(in);
         }
         return in;
+    }
+
+    /**
+     * 实体类转excel
+     *
+     * @param inPath 路径
+     * @throws IOException IOException
+     */
+    public static void beanToExcel(String inPath) throws IOException {
+        XSSFWorkbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet();
+        //属性注释
+        String anno = "";
+        //属性计数
+        int num = 0;
+
+        File infile = new File(inPath);
+
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(infile));
+             BufferedReader br = new BufferedReader(reader)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.startsWith("*") && !line.endsWith("*/")) anno = line;
+                else if (line.startsWith("private")) {
+                    //将当前代码拆分成数组
+                    String[] obj = line.replaceFirst(";", "").split(" ");
+                    if (obj.length == 3) {
+                        //3.添加行
+                        Row row = sheet.createRow(num);
+                        row.createCell(0).setCellValue(obj[2]);
+                        row.createCell(1).setCellValue(obj[1]);
+                        row.createCell(2).setCellValue(anno.substring(1));
+                        num++;
+                    }
+                }
+            }
+        }
+        String p = inPath.substring(inPath.lastIndexOf(File.separator) + 1, inPath.lastIndexOf('.'));
+        try (OutputStream os = new FileOutputStream(p + ".xlsx")) {
+            wb.write(os);
+        }
     }
 }
