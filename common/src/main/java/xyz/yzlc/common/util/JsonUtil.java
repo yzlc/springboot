@@ -5,6 +5,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 
+/**
+ * jsonUtil<br>
+ * <h3>@JsonProperty("")：单独定义字段名称</h3>
+ * <h3>@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)</h3>
+ * <ul>
+ *     <li>SNAKE_CASE：userName -> user_name</li>
+ *     <li>UPPER_CAMEL_CASE：userName -> UserName</li>
+ *     <li>LOWER_CAMEL_CASE：默认值。userName -> userName</li>
+ *     <li>LOWER_CASE：userName -> username</li>
+ *     <li>KEBAB_CASE：userName -> user-name</li>
+ *     <li>LOWER_DOT_CASE：userName -> user.name</li>
+ * </ul>
+ */
 public class JsonUtil {
     public static final ObjectMapper mapper = new ObjectMapper();
 
