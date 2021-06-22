@@ -1,7 +1,6 @@
 package xyz.yzlc.common.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Cxf调用webservice接口
@@ -14,8 +13,8 @@ import org.slf4j.LoggerFactory;
  * <!-- CXF webservice -->
  *
  */
+@Slf4j
 public class CxfUtil {
-    private static final Logger LOG = LoggerFactory.getLogger(CxfUtil.class);
     private static final ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
     /**
@@ -31,7 +30,7 @@ public class CxfUtil {
         if (StringUtils.isEmpty(url) || StringUtils.isEmpty(operation) || Objects.isNull(parameters))
             throw new IllegalArgumentException("args is empty");
         long begin = System.currentTimeMillis();
-        LOG.info("request url: " + url + " operation: " + operation + " parameters: " + Arrays.deepToString(parameters));
+        log.info("request url: " + url + " operation: " + operation + " parameters: " + Arrays.deepToString(parameters));
         Thread.currentThread().setContextClassLoader(cl);
 
         JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
@@ -56,7 +55,7 @@ public class CxfUtil {
                         .findFirst().orElse(new BindingOperationInfo()).getName();
             }
             Object[] invoke = client.invoke(opName, parameters);
-            LOG.info("response " + (System.currentTimeMillis() - begin)/1000.0 + "s：" + Arrays.deepToString(invoke));
+            log.info("response " + (System.currentTimeMillis() - begin)/1000.0 + "s：" + Arrays.deepToString(invoke));
             return invoke;
         }
     }*/
