@@ -36,9 +36,6 @@ public class CxfUtil {
 
         JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
 
-        if (!url.endsWith("wsdl"))
-            url += "?wsdl";
-
         try (Client client = dcf.createClient(url)) {
             //超时设置
             *//*HTTPConduit conduit = (HTTPConduit) client.getConduit();
