@@ -18,3 +18,6 @@ mail:
     addr: yzlc@qq.com
   receptionMail:
     addr: yzlc@qq.com
+
+jwt:
+  ttlMinute: 30
