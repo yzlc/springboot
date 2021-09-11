@@ -21,19 +21,22 @@ public class XmlUtil {
      * @param obj
      * @return
      */
-    public static String toXml(Object obj) throws JAXBException {
+    public static String toXml(Object obj) throws JAXBException, IOException {
+        String xml;
         // 创建输出流
-        StringWriter sw = new StringWriter();
-        // 利用jdk中自带的转换类实现
-        JAXBContext context = JAXBContext.newInstance(obj.getClass());
+        try (StringWriter sw = new StringWriter()) {
+            // 利用jdk中自带的转换类实现
+            JAXBContext context = JAXBContext.newInstance(obj.getClass());
 
-        Marshaller marshaller = context.createMarshaller();
-        // 格式化xml输出的格式
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
-                Boolean.TRUE);
-        // 将对象转换成输出流形式的xml
-        marshaller.marshal(obj, sw);
-        return sw.toString();
+            Marshaller marshaller = context.createMarshaller();
+            // 格式化xml输出的格式
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
+                    Boolean.TRUE);
+            // 将对象转换成输出流形式的xml
+            marshaller.marshal(obj, sw);
+            xml = sw.toString();
+        }
+        return xml;
     }
 
     /**
@@ -52,8 +55,9 @@ public class XmlUtil {
                 Boolean.TRUE);
         // 将对象转换成输出流形式的xml
         // 创建输出流
-        FileWriter fw = new FileWriter(path);
-        marshaller.marshal(obj, fw);
+        try (FileWriter fw = new FileWriter(path)) {
+            marshaller.marshal(obj, fw);
+        }
     }
 
     /**
@@ -63,17 +67,19 @@ public class XmlUtil {
         JAXBContext context = JAXBContext.newInstance(clazz);
         // 进行将Xml转成对象的核心接口
         Unmarshaller unmarshaller = context.createUnmarshaller();
-        StringReader sr = new StringReader(xmlStr);
-        return unmarshaller.unmarshal(sr);
+        try (StringReader sr = new StringReader(xmlStr)) {
+            return unmarshaller.unmarshal(sr);
+        }
     }
 
     /**
      * 将file类型的xml转换成对象
      */
-    public static Object fileToObj(Class clazz, String xmlPath) throws JAXBException, FileNotFoundException {
+    public static Object fileToObj(Class clazz, String xmlPath) throws JAXBException, IOException {
         JAXBContext context = JAXBContext.newInstance(clazz);
         Unmarshaller unmarshaller = context.createUnmarshaller();
-        FileReader fr = new FileReader(xmlPath);
-        return unmarshaller.unmarshal(fr);
+        try (FileReader fr = new FileReader(xmlPath)) {
+            return unmarshaller.unmarshal(fr);
+        }
     }
 }
