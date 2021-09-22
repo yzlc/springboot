@@ -47,7 +47,7 @@ public class HttpUtil {
     private static final RequestConfig requestConfig = RequestConfig.custom()
             .setConnectTimeout(5000)
             .setConnectionRequestTimeout(5000)
-            .setSocketTimeout(10000)
+            .setSocketTimeout(60*1000)
             .build();
 
     // 编码设置
