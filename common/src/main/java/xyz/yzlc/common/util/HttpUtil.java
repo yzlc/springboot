@@ -134,8 +134,8 @@ public class HttpUtil {
         long begin = System.currentTimeMillis();
         try (CloseableHttpClient client = defaultBuilder().build(); CloseableHttpResponse response = client.execute(req)) {
             HttpEntity entity = response.getEntity();
-            String result = StringEscapeUtils.unescapeJava(EntityUtils.toString(entity));
-            LOG.info("response(" + (System.currentTimeMillis() - begin) / 1000.0 + "s): " + result);
+            String result = EntityUtils.toString(entity);
+            LOG.info("response(" + (System.currentTimeMillis() - begin) / 1000.0 + "s): " + StringEscapeUtils.unescapeJava(result));
             return result;
         }
     }
