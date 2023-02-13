@@ -134,5 +134,29 @@
             <optional>false</optional>
             <scope>provided</scope>
         </dependency>
+
+        <!--jira java-->
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-rest-java-client-core</artifactId>
+            <version>5.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>io.atlassian.fugue</groupId>
+            <artifactId>fugue</artifactId>
+            <version>4.7.2</version>
+        </dependency>
+        <!--  http client-->
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>1.4.9</version>
+        </dependency>
+        <!-- svn -->
+        <dependency>
+            <groupId>org.tmatesoft.svnkit</groupId>
+            <artifactId>svnkit</artifactId>
+            <version>1.10.9</version>
+        </dependency>
     </dependencies>
 </project>

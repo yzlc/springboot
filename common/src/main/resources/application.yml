@@ -21,3 +21,15 @@ mail:
 
 jwt:
   ttlMinute: 30
+
+jira:
+  url: http://my.jira.com
+  user: user
+  pwd: pwd
+  projectKey: ADTEST
+
+svn:
+  url: http://my.svn.com
+  user: user
+  pwd: pwd
+  target: /svn
