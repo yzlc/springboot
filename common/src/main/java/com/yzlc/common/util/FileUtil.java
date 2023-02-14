@@ -1,16 +1,13 @@
 package com.yzlc.common.util;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Comparator;
-import java.util.Objects;
+import java.nio.file.*;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -121,5 +118,40 @@ public class FileUtil {
         Path zip = Paths.get(srcDir.getFileName().toString() + ".zip");
         Path dest = Objects.isNull(parent) ? zip : parent.resolve(zip);
         zip(srcDir, dest);
+    }
+
+    /**
+     * 查所有文件
+     */
+    public static List<String> find(Path path,String fileName) throws IOException {
+        try (Stream<Path> paths = Files.walk(path, 2)) {
+            return paths.map(Path::toString).filter(f -> f.endsWith(fileName)).collect(Collectors.toList());
+        }
+    }
+
+    /**
+     * 搜索内容
+     */
+    public static String search(Path path, String key,int line) throws IOException {
+        List<String> collect = Files.lines(path).collect(Collectors.toList());
+        List<Integer> x=new ArrayList<>();
+        for (int i = 0; i < collect.size(); i++) {
+            if (collect.get(i).contains(key)){
+                x.add(i);
+            }
+        }
+        for (Integer y : x) {
+            for (int i = y-line; i < y+line; i++) {
+                System.out.println(collect.get(i));
+            }
+        }
+        return null;
+    }
+
+    public static void main(String[] args) throws IOException {
+        String dir = ".";
+        List<String> strings = find(Paths.get(dir), "pom.xml");
+        System.out.println(strings);
+        search(Paths.get(strings.get(0)),"spring-boot",3);
     }
 }

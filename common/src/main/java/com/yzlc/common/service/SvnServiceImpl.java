@@ -42,6 +42,7 @@ public class SvnServiceImpl implements SvnService {
      *
      * @return boolean
      */
+    @Override
     public boolean checkOut() {
         // 初始化库。 必须先执行此操作。具体操作封装在setupLibrary方法中。
         /*
@@ -129,6 +130,7 @@ public class SvnServiceImpl implements SvnService {
      *
      * @return int(- 1更新失败 ， 1成功 ， 0有程序在占用更新)
      */
+    @Override
     public int doUpdate() {
         if (!doUpdateStatus) {
             System.out.println("更新程序已经在运行中，不能重复请求！");

@@ -1,3 +1,4 @@
+/*
 package com.yzlc.common.util;
 
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import javax.xml.namespace.QName;
 import java.util.Arrays;
 import java.util.Objects;
 
+*/
 /**
  * Cxf调用webservice接口
  * <!-- CXF webservice -->
@@ -24,12 +26,14 @@ import java.util.Objects;
  * </dependency>
  * <!-- CXF webservice -->
  *
- */
+ *//*
+
 @Slf4j
 public class CxfUtil {
     private static final ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
-    /**
+    */
+/**
      * 调用webservice接口
      *
      * @param url        地址
@@ -37,7 +41,8 @@ public class CxfUtil {
      * @param params 参数
      * @return 返回结果
      * @throws Exception 调用失败
-     */
+     *//*
+
    public static Object[] invoke(String url, String operation, Object... params) throws Exception {
         if (StringUtils.isEmpty(url) || StringUtils.isEmpty(operation))
             throw new IllegalArgumentException("args is empty");
@@ -71,4 +76,4 @@ public class CxfUtil {
             return invoke;
         }
     }
-}
+}*/
