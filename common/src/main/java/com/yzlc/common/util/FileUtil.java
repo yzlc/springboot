@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -52,7 +53,7 @@ public class FileUtil {
      * @param more  first/文件
      * @throws IOException
      */
-    public static void write(String str,String first,  String... more) throws IOException {
+    public static void write(String str, String first, String... more) throws IOException {
         Path file = create(first, more);
         Files.write(file, str.getBytes(StandardCharsets.UTF_8),
                 StandardOpenOption.CREATE);
@@ -122,36 +123,51 @@ public class FileUtil {
 
     /**
      * 查所有文件
+     *
+     * @param path 目录
+     * @param key  关键字
+     * @return
+     * @throws IOException
      */
-    public static List<String> find(Path path,String fileName) throws IOException {
-        try (Stream<Path> paths = Files.walk(path, 2)) {
-            return paths.map(Path::toString).filter(f -> f.endsWith(fileName)).collect(Collectors.toList());
+    public static List<String> find(Path path, String... key) throws IOException {
+        try (Stream<Path> paths = Files.walk(path, 99)) {
+            return paths.map(Path::toString).filter(f -> Arrays.stream(key).anyMatch(f::contains)).collect(Collectors.toList());
         }
     }
 
     /**
-     * 搜索内容
+     * 搜索文件内容
+     *
+     * @param path  目录
+     * @param depth 上下行数
+     * @param key   关键字
+     * @return
+     * @throws IOException
      */
-    public static String search(Path path, String key,int line) throws IOException {
-        List<String> collect = Files.lines(path).collect(Collectors.toList());
-        List<Integer> x=new ArrayList<>();
-        for (int i = 0; i < collect.size(); i++) {
-            if (collect.get(i).contains(key)){
-                x.add(i);
+    public static List<String> search(Path path, int depth, String key) throws IOException {
+        List<String> lines = Files.lines(path).collect(Collectors.toList());
+        List<Integer> keyRow = IntStream.range(0, lines.size()).filter(i -> lines.get(i).contains(key)).boxed().collect(Collectors.toList());
+        int prevEnd = 0;
+        List<String> res = new ArrayList<>();
+        for (int row : keyRow) {
+            for (int i = row - depth; i < row + depth && i < lines.size(); i++) {
+                if (i <= prevEnd) continue;
+                res.add(lines.get(i));
             }
+            prevEnd = row + depth - 1;
         }
-        for (Integer y : x) {
-            for (int i = y-line; i < y+line; i++) {
-                System.out.println(collect.get(i));
-            }
-        }
-        return null;
+        return res;
     }
 
     public static void main(String[] args) throws IOException {
         String dir = ".";
-        List<String> strings = find(Paths.get(dir), "pom.xml");
-        System.out.println(strings);
-        search(Paths.get(strings.get(0)),"spring-boot",3);
+        List<String> paths = find(Paths.get(dir), ".java", "pom.xml", ".yml", ".properties");
+        for (String path : paths) {
+            List<String> res = search(Paths.get(path), 3, "svn");
+            if (res.isEmpty()) continue;
+            System.out.println(path);
+            System.out.println(String.join("\n", res));
+            System.out.println();
+        }
     }
 }
