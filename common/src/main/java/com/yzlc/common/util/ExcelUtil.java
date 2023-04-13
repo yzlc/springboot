@@ -2,6 +2,7 @@ package com.yzlc.common.util;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
@@ -11,9 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author yzlc
@@ -282,5 +281,23 @@ public class ExcelUtil {
         try (OutputStream os = new FileOutputStream(p + ".xlsx")) {
             wb.write(os);
         }
+    }
+
+    public static void replace(String filePath, Map<String, String> replacements) throws IOException, InvalidFormatException {
+        Workbook workbook = WorkbookFactory.create(new FileInputStream(filePath));
+        Sheet sheet = workbook.getSheetAt(0);
+        DataFormatter dataFormatter = new DataFormatter();
+        for (Row row : sheet) {
+            for (Cell cell : row) {
+                String cellValue = dataFormatter.formatCellValue(cell);
+                if (replacements.containsKey(cellValue)) {
+                    cell.setCellValue(replacements.get(cellValue));
+                }
+            }
+        }
+        FileOutputStream fileOut = new FileOutputStream(filePath);
+        workbook.write(fileOut);
+        fileOut.close();
+        workbook.close();
     }
 }
