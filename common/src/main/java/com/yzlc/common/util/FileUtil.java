@@ -1,12 +1,14 @@
 package com.yzlc.common.util;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -157,6 +159,43 @@ public class FileUtil {
             prevEnd = row + depth - 1;
         }
         return res;
+    }
+
+    /**
+     * 替换目录和文件名称
+     *
+     * @param directory   目录
+     * @param target      替换符 例如：${date}
+     * @param replacement 替换内容 例如：20230415
+     */
+    public static void replace(File directory, String target, String replacement) {
+        if (directory.isDirectory()) {
+            // 处理文件夹名称
+            String originalName = directory.getName();
+            String newName = originalName.replace(target, replacement);
+            if (!newName.equals(originalName)) {
+                File newDirectory = new File(directory.getParentFile(), newName);
+                directory.renameTo(newDirectory);
+                directory = newDirectory;
+            }
+
+            // 处理文件名称
+            File[] files = directory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        replace(file, target, replacement);
+                    } else {
+                        String originalFileName = file.getName();
+                        String newFileName = originalFileName.replace(target, replacement);
+                        if (!newFileName.equals(originalFileName)) {
+                            File newFile = new File(directory, newFileName);
+                            file.renameTo(newFile);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public static void main(String[] args) throws IOException {
