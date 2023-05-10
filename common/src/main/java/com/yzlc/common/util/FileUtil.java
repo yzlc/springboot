@@ -81,6 +81,7 @@ public class FileUtil {
     }
 
     public static void delete(Path path) throws IOException {
+        if (Files.notExists(path)) return;
         Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
     }
 
