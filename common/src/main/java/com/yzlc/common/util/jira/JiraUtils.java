@@ -51,6 +51,12 @@ public class JiraUtils {
         }
     }
 
+    public void forwardIssue(String issueKey, String assigneeName) {
+        IssueInputBuilder issueInputBuilder = new IssueInputBuilder();
+        issueInputBuilder.setAssigneeName(assigneeName);
+        jiraRestClient.getIssueClient().updateIssue(issueKey, issueInputBuilder.build()).claim();
+    }
+
     public BasicIssue createIssue(IssueInfo issueInfo) {
         IssueRestClient issueRestClient = jiraRestClient.getIssueClient();
         IssueInputBuilder issueBuilder = new IssueInputBuilder(issueInfo.getProjectKey(), Long.parseLong(issueInfo.getIssueType()))
