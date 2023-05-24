@@ -19,54 +19,64 @@ import java.util.*;
 
 @Slf4j
 public class SVNUtils {
-    private static final String SVN_URL = PropertiesUtils.getProperty("svn.url");
-    private static final String USERNAME = PropertiesUtils.getProperty("svn.userName");
-    private static final String PASSWORD = PropertiesUtils.getProperty("svn.password");
     private static SVNRepository repository = null;
 
-    public static void login(String rootDir) throws SVNException {
+    public SVNUtils(String rootDir, String svnUrl, String username, String password) throws SVNException {
         log.info("login " + rootDir);
         setupLibrary();
-        repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(SVN_URL + "/" + rootDir));
-        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(USERNAME, PASSWORD);
+        repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(svnUrl + "/" + rootDir));
+        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(username, password);
         repository.setAuthenticationManager(authManager);
     }
 
-    public static void logout() {
+    public void logout() {
         log.info("logout");
         if (repository != null) {
             repository.closeSession();
         }
     }
 
-    public static void download(long revision, String targetDir) throws SVNException, IOException {
+    public void download(long revision, String targetDir) throws SVNException, IOException {
         log.info("downloading... revision=" + revision + ",targetDir=" + targetDir);
-        download("", null, null, revision, targetDir);
+        download("", null, null, revision, targetDir, false);
     }
 
-    public static void download(String path, List<String> keyFiles, List<String> keyDirs, String targetDir) throws SVNException, IOException {
+    public List<String> search(String path, List<String> keyFiles, List<String> keyDirs) throws SVNException, IOException {
+        log.info("search... path=" + path + ",keyFiles=" + keyFiles + ",keyDirs=" + keyDirs);
+        return download("/" + path, new HashSet<>(keyFiles), new HashSet<>(keyDirs), -1, null, true);
+    }
+
+    public List<String> download(String path, List<String> keyFiles, List<String> keyDirs, String targetDir) throws SVNException, IOException {
         log.info("downloading... path=" + path + ",keyFiles=" + keyFiles + ",keyDirs=" + keyDirs + ",targetDir=" + targetDir);
-        download("/" + path, new HashSet<>(keyFiles), new HashSet<>(keyDirs), -1, targetDir);
+        return download("/" + path, new HashSet<>(keyFiles), new HashSet<>(keyDirs), -1, targetDir, false);
     }
 
-    private static void download(String path, Set<String> keyFiles, Set<String> keyDirs, long revision, String targetDir) throws SVNException, IOException {
+    private List<String> download(String path, Set<String> keyFiles, Set<String> keyDirs, long revision, String targetDir, boolean search) throws SVNException, IOException {
         Collection<SVNDirEntry> entries = repository.getDir(path, revision, null, (Collection) null);
+        List<String> list = new ArrayList<>();
         for (SVNDirEntry entry : entries) {
             if (!Objects.equals(revision, -1L) && !Objects.equals(entry.getRevision(), revision)) continue;
 
             if (entry.getKind() == SVNNodeKind.DIR) {
-                if (!Objects.isNull(keyDirs) && keyDirs.stream().noneMatch(entry.getName()::contains)) continue;
+                if (!Objects.isNull(keyDirs) && !keyDirs.isEmpty() && keyDirs.stream().noneMatch(entry.getName()::contains))
+                    continue;
                 String subPath = path.isEmpty() ? entry.getName() : path + "/" + entry.getName();
-                download(subPath, keyFiles, null, revision, targetDir);
+                List<String> download = download(subPath, keyFiles, null, revision, targetDir, search);
+                if (!download.isEmpty()) list.addAll(download);
             } else if (entry.getKind() == SVNNodeKind.FILE) {
                 boolean match = true;
                 if (!Objects.isNull(keyFiles)) match = keyFiles.stream().allMatch(entry.getName()::contains);
                 if (!match) continue;
-                try (OutputStream outputStream = new FileOutputStream(targetDir + File.separator + entry.getName())) {
+                log.info(path + "/" + entry.getName());
+                list.add(path + "/" + entry.getName());
+                FileUtil.create(targetDir+ "/"+path);
+                if (search) continue;
+                try (OutputStream outputStream = new FileOutputStream(targetDir + File.separator + path + File.separator + entry.getName())) {
                     repository.getFile(path + "/" + entry.getName(), -1, null, outputStream);
                 }
             }
         }
+        return list;
     }
 
     public static String log(long revision) throws SVNException {
@@ -85,20 +95,17 @@ public class SVNUtils {
         return null;
     }
 
-    private static void setupLibrary() {
+    private void setupLibrary() {
         DAVRepositoryFactory.setup();
         SVNRepositoryFactoryImpl.setup();
         FSRepositoryFactory.setup();
     }
 
     public static void main(String[] args) throws SVNException, IOException {
-        login("xxdir");
-        download("/xx项目", Arrays.asList("a", "b"), new ArrayList<>(), null);
-        logout();
-
-        login("zzdir");
-        download(1, "");
-        log(1);
-        logout();
+        SVNUtils svnUtils = new SVNUtils("src", "https://ip:port/svn",
+                "username", "password");
+        List<String> list = svnUtils.search("a/b", Arrays.asList(".jar"), Collections.emptyList());
+        svnUtils.download("a/b", Arrays.asList("pom.xml"), Collections.emptyList(), "test");
+        svnUtils.logout();
     }
 }
