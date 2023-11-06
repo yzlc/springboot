@@ -9,6 +9,9 @@ import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
+import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import java.io.File;
@@ -69,7 +72,7 @@ public class SVNUtils {
                 if (!match) continue;
                 log.info(path + "/" + entry.getName());
                 list.add(path + "/" + entry.getName());
-                FileUtil.create(targetDir+ "/"+path);
+                FileUtil.create(targetDir + "/" + path);
                 if (search) continue;
                 try (OutputStream outputStream = new FileOutputStream(targetDir + File.separator + path + File.separator + entry.getName())) {
                     repository.getFile(path + "/" + entry.getName(), -1, null, outputStream);
@@ -99,6 +102,22 @@ public class SVNUtils {
         DAVRepositoryFactory.setup();
         SVNRepositoryFactoryImpl.setup();
         FSRepositoryFactory.setup();
+    }
+
+    // 拉取代码到指定目录
+    public void checkout(String destinationDir) throws SVNException {
+        log.info("checkout destinationDir=" + destinationDir);
+        SVNUpdateClient updateClient = SVNClientManager.newInstance().getUpdateClient();
+        updateClient.setIgnoreExternals(false);
+        updateClient.doCheckout(repository.getLocation(), new File(destinationDir), SVNRevision.HEAD, SVNRevision.HEAD, SVNDepth.INFINITY, false);
+    }
+
+    // 更新本地工作副本
+    public void update(String workingCopyPath) throws SVNException {
+        log.info("update destinationDir=" + workingCopyPath);
+        SVNUpdateClient updateClient = SVNClientManager.newInstance().getUpdateClient();
+        updateClient.setIgnoreExternals(false);
+        updateClient.doUpdate(new File(workingCopyPath), SVNRevision.HEAD, SVNDepth.INFINITY, false, false);
     }
 
     public static void main(String[] args) throws SVNException, IOException {
