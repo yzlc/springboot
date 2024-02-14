@@ -1,12 +1,15 @@
 package com.yzlc.common.util;
 
 import com.google.common.base.CaseFormat;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * <dependency>
@@ -57,5 +60,27 @@ public class BeanUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void copyProperties(Object source, Object target) throws BeansException {
+        if (Objects.isNull(source)) return;
+        BeanUtils.copyProperties(source, target,getNullPropertyNames(source));
+    }
+
+    public static String[] getNullPropertyNames (Object source) {
+//        org.springframework.beans.BeanWrapper
+        final BeanWrapper src = new BeanWrapperImpl(source);
+//        java.beans.PropertyDescriptor
+        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet<>();
+        for(PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null) {
+                emptyNames.add(pd.getName());
+            }
+        }
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
     }
 }
