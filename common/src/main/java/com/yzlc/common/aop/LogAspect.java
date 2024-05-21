@@ -37,9 +37,10 @@ public class LogAspect {
         assert attributes != null;
         HttpServletRequest request = attributes.getRequest();
         try {
-            log.info("request start》》》|IP:{}|URL：{}|header:{}|param:{}", request.getRemoteAddr(),
+            log.info("request start》》》|IP:{}|URL：{}|param:{}|header:{}", request.getRemoteAddr(),
                     request.getRequestURL().toString(),
-                    JsonUtil.obj2json(this.getHeader(request)), JsonUtil.obj2json(this.getRequestParams(joinPoint)));
+                    JsonUtil.obj2json(this.getRequestParams(joinPoint)),
+                    JsonUtil.obj2json(this.getHeader(request)));
         } catch (Exception e) {
             log.info("全局请求日志打印异常:", e);
         }
