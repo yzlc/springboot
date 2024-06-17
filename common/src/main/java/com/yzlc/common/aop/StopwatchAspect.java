@@ -30,17 +30,17 @@ public class StopwatchAspect {
     private static final ThreadLocal<com.google.common.base.Stopwatch> STOPWATCH =
             new NamedThreadLocal<>("stopwatch");
 
-    @Before("within(xyz.yzlc..*) && @annotation(stopwatch)")
+    @Before("within(com.yzlc..*) && @annotation(stopwatch)")
     public void before(JoinPoint joinPoint, Stopwatch stopwatch) {
         STOPWATCH.set(com.google.common.base.Stopwatch.createStarted());
     }
 
-    @AfterReturning("within(xyz.yzlc..*) && @annotation(stopwatch)")
+    @AfterReturning("within(com.yzlc..*) && @annotation(stopwatch)")
     public void afterReturning(JoinPoint joinPoint, Stopwatch stopwatch) {
         LOG.info(log(joinPoint, stopwatch));
     }
 
-    @AfterThrowing(pointcut = "within(xyz.yzlc..*) && @annotation(stopwatch)", throwing = "e")
+    @AfterThrowing(pointcut = "within(com.yzlc..*) && @annotation(stopwatch)", throwing = "e")
     public void afterThrowing(JoinPoint joinPoint, Stopwatch stopwatch, Exception e) {
         LOG.error(log(joinPoint, stopwatch) + " Exception", e);
     }

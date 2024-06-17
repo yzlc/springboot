@@ -1,5 +1,5 @@
 /*
-package xyz.yzlc.task;
+package com.yzlc.task;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

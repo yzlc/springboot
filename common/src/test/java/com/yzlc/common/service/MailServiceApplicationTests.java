@@ -1,5 +1,5 @@
 /*
-package xyz.yzlc.common.service;
+package com.yzlc.common.service;
 
 
 import org.junit.jupiter.api.Test;
