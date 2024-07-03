@@ -41,6 +41,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!--lombok依赖 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>false</optional>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
