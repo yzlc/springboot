@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<staff>
+    <employee>
+        <name>zhang3</name>
+        <salary>100</salary>
+        <hiredate year="1987" month="12" day="15"></hiredate>
+    </employee>
+    <employee>
+        <name>li4</name>
+        <salary>200</salary>
+        <hiredate year="1986" month="11" day="14"></hiredate>
+    </employee>
+    <employee>
+        <name>wang5</name>
+        <salary>300</salary>
+        <hiredate year="1985" month="10" day="13"></hiredate>
+    </employee>
+</staff>
